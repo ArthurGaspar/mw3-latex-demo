@@ -1,0 +1,167 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+
+% Math
+\usepackage{amsmath, amssymb, amsthm}
+
+% Tables and lists
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+
+% Design
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+
+% ============================================================
+% Theme: change these three colours to re-theme the document.
+% ============================================================
+\definecolor{accent}{HTML}{8B2B40}
+\definecolor{accentDark}{HTML}{5D3A1A}
+\definecolor{accentLight}{HTML}{F9F4E8}
+
+% ============================================================
+% Content boxes: the toolbar's "Boxes" menu inserts these styles.
+% ============================================================
+\tcbset{
+    definitionBox/.style={
+        enhanced, breakable, colback=accentLight, colframe=accent,
+        fonttitle=\bfseries, coltitle=white, colbacktitle=accent,
+        boxrule=1pt, arc=4pt,
+        left=10pt, right=10pt, top=5pt, bottom=5pt,
+    },
+    noteBox/.style={
+        enhanced, breakable, colback=white, colframe=accent,
+        fonttitle=\bfseries, coltitle=accent, colbacktitle=white,
+        boxrule=0pt, leftrule=4pt, sharp corners,
+        left=10pt, right=10pt,
+    },
+    exampleBox/.style={
+        enhanced, breakable, colback=accentLight!60!white, colframe=accentDark,
+        fonttitle=\bfseries, coltitle=white,
+        boxrule=0.5pt, arc=3pt,
+        left=10pt, right=10pt,
+    },
+    textBox/.style={
+        enhanced, breakable, colback=white, colframe=accentDark,
+        boxrule=0pt, leftrule=2pt, sharp corners,
+        left=10pt, right=10pt,
+    },
+    genericBox/.style={
+        enhanced, breakable, colback=accentLight!60!white, colframe=accentDark,
+        boxrule=0.5pt, arc=3pt,
+        left=10pt, right=10pt,
+    },
+}
+
+% Theorem-like environments
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}[section]
+\theoremstyle{remark}
+\newtheorem*{remark}{Remark}
+
+% Coloured list markers
+\setlist[itemize,1]{label={\color{accent}\textbullet}}
+\setlist[enumerate,1]{label={\color{accent}\bfseries\arabic*.}}
+
+% A simple title block
+\newcommand{\notesTitle}[2]{%
+    \noindent{\color{accent}\rule{\linewidth}{3pt}}\par
+    \vspace{1.2em}
+    \begin{center}
+        {\color{accentDark}\LARGE\bfseries #1}\par
+        \vspace{0.5em}
+        {\color{accent}\large #2}\par
+        \vspace{0.4em}
+        {\small \today}
+    \end{center}
+    \vspace{0.6em}
+    \noindent{\color{accent}\rule{\linewidth}{1pt}}\par
+    \vspace{1.5em}
+}
+
+% hyperref goes last: it patches many other packages.
+\usepackage{xurl}
+\usepackage[
+    colorlinks=true,
+    urlcolor=accent,
+    linkcolor=accent,
+    breaklinks=true,
+    pdfpagemode=UseNone
+]{hyperref}
+
+\begin{document}
+
+\notesTitle{{{title}}}{Linear Algebra --- Eigenvalues and Eigenvectors}
+
+\section{Motivation}
+
+Many linear transformations have special directions that they only \emph{stretch}, never rotate. Finding those directions turns a hard matrix problem into a handful of scalar ones. Press \textbf{Ctrl+Enter} to compile, and scroll either pane: the other follows, anchored on the section headings.
+
+\begin{tcolorbox}[definitionBox, title=Definition 1.1]
+Let $A$ be an $n \times n$ matrix. A nonzero vector $\mathbf{v}$ is an \emph{eigenvector} of $A$ if
+\[ A\mathbf{v} = \lambda \mathbf{v} \]
+for some scalar $\lambda$, called the corresponding \emph{eigenvalue}.
+\end{tcolorbox}
+
+\section{Finding eigenvalues}
+
+Rewriting the definition as $(A - \lambda I)\mathbf{v} = \mathbf{0}$ shows that a nonzero solution exists exactly when $A - \lambda I$ is singular.
+
+\begin{theorem}
+$\lambda$ is an eigenvalue of $A$ if and only if
+\[ \det(A - \lambda I) = 0. \]
+\end{theorem}
+
+\begin{tcolorbox}[noteBox, title=Note]
+The polynomial $p(\lambda) = \det(A - \lambda I)$ is the \emph{characteristic polynomial}. It has degree $n$, so $A$ has at most $n$ distinct eigenvalues.
+\end{tcolorbox}
+
+\subsection{A worked example}
+
+\begin{tcolorbox}[exampleBox, title=Example 2.1]
+Let
+\[ A = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}. \]
+Then
+\[ \det(A - \lambda I) = (2-\lambda)^2 - 1 = (\lambda - 1)(\lambda - 3), \]
+so the eigenvalues are $\lambda_1 = 1$ and $\lambda_2 = 3$, with eigenvectors $(1,-1)^{T}$ and $(1,1)^{T}$.
+\end{tcolorbox}
+
+\section{Summary}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{@{}lll@{}}
+        \toprule
+        \textbf{Concept} & \textbf{Equation} & \textbf{Meaning} \\
+        \midrule
+        Eigenpair            & $A\mathbf{v} = \lambda\mathbf{v}$  & Direction only scaled \\
+        Characteristic eq.   & $\det(A - \lambda I) = 0$          & Finds every $\lambda$ \\
+        Trace                & $\operatorname{tr} A = \sum \lambda_i$ & Sum of eigenvalues \\
+        Determinant          & $\det A = \prod \lambda_i$         & Product of eigenvalues \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{remark}
+Symmetric real matrices, like the one in Example 2.1, always have real eigenvalues and orthogonal eigenvectors.
+\end{remark}
+
+\section{Exercises}
+
+\begin{enumerate}
+    \item Find the eigenvalues of $\begin{pmatrix} 4 & 0 \\ 0 & -1 \end{pmatrix}$.
+    \item Which of the following is the characteristic polynomial of $\begin{pmatrix} 1 & 2 \\ 0 & 3 \end{pmatrix}$?
+    \begin{enumerate}[label=\alph*),leftmargin=1.5em,topsep=0.3em,itemsep=0.15em]
+        \item $\lambda^2 - 4\lambda + 3$
+        \item $\lambda^2 + 4\lambda + 3$
+        \item $\lambda^2 - 3$
+    \end{enumerate}
+\end{enumerate}
+
+\vspace{1em}
+\noindent Further reading: \href{https://en.wikipedia.org/wiki/Eigenvalues_and_eigenvectors}{Eigenvalues and eigenvectors}.
+
+\end{document}

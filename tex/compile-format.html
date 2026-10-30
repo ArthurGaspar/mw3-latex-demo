@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<!--
+    Rebuilds tex/texlive/pdftex/10/swiftlatexpdftex.fmt from the current TeX tree.
+    Run it after changing core macro files (see tex/sync-packages.py), with
+    dev-server.js running so the result can be saved in place:
+        node dev-server.js  →  http://localhost:8321/tex/compile-format.html
+-->
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Compile LaTeX Format</title>
+    <style>
+        body { font-family: monospace; padding: 20px; background: #111; color: #eee; }
+        h1 { color: #7af; }
+        #log {
+            white-space: pre-wrap;
+            background: #222;
+            padding: 12px;
+            border-radius: 4px;
+            height: 400px;
+            overflow-y: auto;
+        }
+        .ok   { color: #7f7; }
+        .err  { color: #f77; }
+        .info { color: #aaf; }
+    </style>
+</head>
+
+<body>
+    <h1>LaTeX Format Compiler</h1>
+    <p>This page compiles a fresh <code>swiftlatexpdftex.fmt</code> from the current TeX Live packages.</p>
+    <div id="log"></div>
+
+    <script>
+        const logContainer = document.getElementById('log');
+
+        function log(msg, cls) {
+            const line = document.createElement('span');
+            if (cls) line.className = cls;
+            let text = msg;
+            if (msg) {
+                const now = new Date();
+                const hh = String(now.getHours()).padStart(2, '0');
+                const mm = String(now.getMinutes()).padStart(2, '0');
+                const ss = String(now.getSeconds()).padStart(2, '0');
+                text = `[${hh}:${mm}:${ss}] ${msg}`;
+            }
+            line.textContent = text + '\n';
+            logContainer.appendChild(line);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+
+        // Resolves on the first worker message whose `cmd` matches; rejects on a
+        // non-ok result, a worker error, or the optional timeout.
+        function waitForWorkerMessage(worker, cmdFilter, errorMessage, timeoutMs) {
+            return new Promise((resolve, reject) => {
+                let timeoutId;
+
+                const cleanup = () => {
+                    worker.removeEventListener('message', handleMessage);
+                    worker.removeEventListener('error', handleError);
+                    if (timeoutId) clearTimeout(timeoutId);
+                };
+
+                const handleMessage = (event) => {
+                    const data = event.data;
+                    if (data.cmd !== cmdFilter) return;
+                    cleanup();
+                    if (data.result === 'ok') resolve(data);
+                    else reject(new Error(data.log ? `${errorMessage}:\n${data.log}` : errorMessage));
+                };
+
+                const handleError = (error) => {
+                    cleanup();
+                    reject(error);
+                };
+
+                if (timeoutMs) {
+                    timeoutId = setTimeout(() => {
+                        cleanup();
+                        reject(new Error(`${errorMessage} (timed out after ${timeoutMs / 1000}s)`));
+                    }, timeoutMs);
+                }
+
+                worker.addEventListener('message', handleMessage);
+                worker.addEventListener('error', handleError);
+            });
+        }
+
+        async function run() {
+            log('Loading SwiftLaTeX worker...', 'info');
+            const worker = new Worker('engine/swiftlatexpdftex.js?v=' + Date.now());
+
+            // 1. The worker posts a bare {result:'ok'} once initialized.
+            await waitForWorkerMessage(worker, undefined, 'Worker init failed');
+            log('Worker ready.', 'ok');
+
+            // pdflatex.ini is the entry point _compileFormat() looks for in WORKROOT.
+            // latex.ltx (which ends with \dump) is fetched via kpathsea from texlive/pdftex/26/.
+            const ini = '\\pdfoutput=1\n\\input latex.ltx\n';
+            log('Writing pdflatex.ini to engine MemFS...', 'info');
+
+            // 2. Write the ini file.
+            worker.postMessage({ cmd: 'writefile', url: 'pdflatex.ini', src: new TextEncoder().encode(ini) });
+            await waitForWorkerMessage(worker, 'writefile', 'writefile failed');
+            log('pdflatex.ini written.', 'ok');
+
+            log('Starting format compilation — this may take 30-120 seconds...', 'info');
+            log('(Kernel files are fetched on demand from texlive/pdftex/26/)', 'info');
+            const t0 = Date.now();
+
+            // 3. Compile the format.
+            worker.postMessage({ cmd: 'compileformat' });
+            const result = await waitForWorkerMessage(worker, 'compile', 'Compilation failed', 150000);
+
+            const elapsed = ((Date.now() - t0) / 1000).toFixed(1);
+            log(`Format compiled in ${elapsed}s. Size: ${result.pdf.byteLength} bytes.`, 'ok');
+            log('--- TeX log tail ---', 'info');
+            log((result.log || '').slice(-5000), 'info');
+            log('--- end log ---', 'info');
+            window.__result.log = result.log;
+
+            // Try to save in place through dev-server.js; fall back to a download.
+            try {
+                const resp = await fetch('/tex/texlive/pdftex/10/swiftlatexpdftex.fmt', {
+                    method: 'PUT',
+                    body: result.pdf,
+                });
+                if (!resp.ok) throw new Error('PUT returned ' + resp.status);
+                log('', 'ok');
+                log('SUCCESS! Format saved to tex/texlive/pdftex/10/swiftlatexpdftex.fmt', 'ok');
+                window.__result.state = 'saved';
+                return;
+            } catch (error) {
+                log('Auto-save failed (' + error.message + '), falling back to manual download...', 'info');
+            }
+
+            const url = URL.createObjectURL(new Blob([result.pdf], { type: 'application/octet-stream' }));
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'swiftlatexpdftex.fmt';
+            document.body.appendChild(a);
+            a.click();
+            setTimeout(() => URL.revokeObjectURL(url), 60000);
+
+            log('', 'ok');
+            log('SUCCESS! Move the downloaded file to:', 'ok');
+            log('  tex/texlive/pdftex/10/swiftlatexpdftex.fmt', 'ok');
+            log('Then reload the editor and test.', 'ok');
+            window.__result.state = 'downloaded';
+        }
+
+        window.__result = { state: 'running', log: null };
+        run().catch(err => {
+            log('', 'err');
+            log('ERROR: ' + err.message, 'err');
+            console.error(err);
+            window.__result.state = 'error';
+            window.__result.error = String(err.message || err);
+        });
+    </script>
+</body>
+
+</html>

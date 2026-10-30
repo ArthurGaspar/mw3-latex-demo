@@ -1,0 +1,62 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese-brazil]{babel}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{xurl}
+\usepackage[colorlinks=true, linkcolor=black, urlcolor=blue, citecolor=black]{hyperref}
+
+\title{{{title}}}
+\author{Primeiro Autor \and Segundo Autor}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Apresente o problema, a abordagem e o principal resultado em poucas frases.
+\end{abstract}
+
+\section{Introdução}
+
+Apresente o contexto e a pergunta que este artigo responde. Cite trabalhos anteriores quando necessário \cite{knuth1984}.
+
+\section{Método}
+
+Descreva o que foi feito com detalhe suficiente para que outra pessoa possa repetir.
+
+\begin{equation}
+    f(x) = \frac{1}{\sigma\sqrt{2\pi}} \, e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+    \label{eq:normal}
+\end{equation}
+
+A Equação~\eqref{eq:normal} é referenciada automaticamente.
+
+\section{Resultados}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{@{}lcc@{}}
+        \toprule
+        \textbf{Condição} & \textbf{Média} & \textbf{DP} \\
+        \midrule
+        Controle   & 0,00 & 1,00 \\
+        Tratamento & 0,42 & 0,95 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Resumo dos resultados.}
+    \label{tab:results}
+\end{table}
+
+\section{Conclusão}
+
+Resuma os achados e suas implicações.
+
+\begin{thebibliography}{9}
+\bibitem{knuth1984}
+    D.~E. Knuth, \emph{The \TeX book}. Addison-Wesley, 1984.
+\end{thebibliography}
+
+\end{document}

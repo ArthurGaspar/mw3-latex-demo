@@ -1,0 +1,61 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath, amssymb}
+\usepackage{booktabs}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+\usepackage{xurl}
+\usepackage[colorlinks=true, linkcolor=black, urlcolor=blue, citecolor=black]{hyperref}
+
+\title{{{title}}}
+\author{First Author \and Second Author}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+State the problem, the approach, and the main result in a few sentences.
+\end{abstract}
+
+\section{Introduction}
+
+Introduce the context and the question this article answers. Cite prior work as needed \cite{knuth1984}.
+
+\section{Method}
+
+Describe what was done, in enough detail for someone else to repeat it.
+
+\begin{equation}
+    f(x) = \frac{1}{\sigma\sqrt{2\pi}} \, e^{-\frac{(x-\mu)^2}{2\sigma^2}}
+    \label{eq:normal}
+\end{equation}
+
+Equation~\eqref{eq:normal} is referenced automatically.
+
+\section{Results}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{@{}lcc@{}}
+        \toprule
+        \textbf{Condition} & \textbf{Mean} & \textbf{SD} \\
+        \midrule
+        Control   & 0.00 & 1.00 \\
+        Treatment & 0.42 & 0.95 \\
+        \bottomrule
+    \end{tabular}
+    \caption{Summary of results.}
+    \label{tab:results}
+\end{table}
+
+\section{Conclusion}
+
+Summarise the findings and their implications.
+
+\begin{thebibliography}{9}
+\bibitem{knuth1984}
+    D.~E. Knuth, \emph{The \TeX book}. Addison-Wesley, 1984.
+\end{thebibliography}
+
+\end{document}

@@ -1,0 +1,168 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[portuguese-brazil]{babel}
+
+% Matemática
+\usepackage{amsmath, amssymb, amsthm}
+
+% Tabelas e listas
+\usepackage{booktabs}
+\usepackage{array}
+\usepackage{enumitem}
+
+% Design
+\usepackage{xcolor}
+\usepackage[most]{tcolorbox}
+\usepackage{geometry}
+\geometry{margin=2.5cm}
+
+% ============================================================
+% Tema: troque estas três cores para mudar o visual do documento.
+% ============================================================
+\definecolor{accent}{HTML}{8B2B40}
+\definecolor{accentDark}{HTML}{5D3A1A}
+\definecolor{accentLight}{HTML}{F9F4E8}
+
+% ============================================================
+% Caixas de conteúdo: o menu "Caixas" da barra insere estes estilos.
+% ============================================================
+\tcbset{
+    definitionBox/.style={
+        enhanced, breakable, colback=accentLight, colframe=accent,
+        fonttitle=\bfseries, coltitle=white, colbacktitle=accent,
+        boxrule=1pt, arc=4pt,
+        left=10pt, right=10pt, top=5pt, bottom=5pt,
+    },
+    noteBox/.style={
+        enhanced, breakable, colback=white, colframe=accent,
+        fonttitle=\bfseries, coltitle=accent, colbacktitle=white,
+        boxrule=0pt, leftrule=4pt, sharp corners,
+        left=10pt, right=10pt,
+    },
+    exampleBox/.style={
+        enhanced, breakable, colback=accentLight!60!white, colframe=accentDark,
+        fonttitle=\bfseries, coltitle=white,
+        boxrule=0.5pt, arc=3pt,
+        left=10pt, right=10pt,
+    },
+    textBox/.style={
+        enhanced, breakable, colback=white, colframe=accentDark,
+        boxrule=0pt, leftrule=2pt, sharp corners,
+        left=10pt, right=10pt,
+    },
+    genericBox/.style={
+        enhanced, breakable, colback=accentLight!60!white, colframe=accentDark,
+        boxrule=0.5pt, arc=3pt,
+        left=10pt, right=10pt,
+    },
+}
+
+% Ambientes de teorema
+\theoremstyle{plain}
+\newtheorem{theorem}{Teorema}[section]
+\theoremstyle{remark}
+\newtheorem*{remark}{Comentário}
+
+% Marcadores de lista coloridos
+\setlist[itemize,1]{label={\color{accent}\textbullet}}
+\setlist[enumerate,1]{label={\color{accent}\bfseries\arabic*.}}
+
+% Bloco de título simples
+\newcommand{\notesTitle}[2]{%
+    \noindent{\color{accent}\rule{\linewidth}{3pt}}\par
+    \vspace{1.2em}
+    \begin{center}
+        {\color{accentDark}\LARGE\bfseries #1}\par
+        \vspace{0.5em}
+        {\color{accent}\large #2}\par
+        \vspace{0.4em}
+        {\small \today}
+    \end{center}
+    \vspace{0.6em}
+    \noindent{\color{accent}\rule{\linewidth}{1pt}}\par
+    \vspace{1.5em}
+}
+
+% hyperref vem por último: ele altera vários outros pacotes.
+\usepackage{xurl}
+\usepackage[
+    colorlinks=true,
+    urlcolor=accent,
+    linkcolor=accent,
+    breaklinks=true,
+    pdfpagemode=UseNone
+]{hyperref}
+
+\begin{document}
+
+\notesTitle{{{title}}}{Álgebra Linear --- Autovalores e Autovetores}
+
+\section{Motivação}
+
+Muitas transformações lineares têm direções especiais que elas apenas \emph{esticam}, sem girar. Encontrar essas direções transforma um problema matricial difícil em alguns poucos problemas escalares. Pressione \textbf{Ctrl+Enter} para compilar e role qualquer um dos painéis: o outro acompanha, ancorado nos títulos das seções.
+
+\begin{tcolorbox}[definitionBox, title=Definição 1.1]
+Seja $A$ uma matriz $n \times n$. Um vetor não nulo $\mathbf{v}$ é um \emph{autovetor} de $A$ se
+\[ A\mathbf{v} = \lambda \mathbf{v} \]
+para algum escalar $\lambda$, chamado de \emph{autovalor} correspondente.
+\end{tcolorbox}
+
+\section{Encontrando autovalores}
+
+Reescrevendo a definição como $(A - \lambda I)\mathbf{v} = \mathbf{0}$, vemos que existe solução não nula exatamente quando $A - \lambda I$ é singular.
+
+\begin{theorem}
+$\lambda$ é autovalor de $A$ se, e somente se,
+\[ \det(A - \lambda I) = 0. \]
+\end{theorem}
+
+\begin{tcolorbox}[noteBox, title=Observação]
+O polinômio $p(\lambda) = \det(A - \lambda I)$ é o \emph{polinômio característico}. Ele tem grau $n$, então $A$ tem no máximo $n$ autovalores distintos.
+\end{tcolorbox}
+
+\subsection{Um exemplo resolvido}
+
+\begin{tcolorbox}[exampleBox, title=Exemplo 2.1]
+Seja
+\[ A = \begin{pmatrix} 2 & 1 \\ 1 & 2 \end{pmatrix}. \]
+Então
+\[ \det(A - \lambda I) = (2-\lambda)^2 - 1 = (\lambda - 1)(\lambda - 3), \]
+logo os autovalores são $\lambda_1 = 1$ e $\lambda_2 = 3$, com autovetores $(1,-1)^{T}$ e $(1,1)^{T}$.
+\end{tcolorbox}
+
+\section{Resumo}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{@{}lll@{}}
+        \toprule
+        \textbf{Conceito} & \textbf{Equação} & \textbf{Significado} \\
+        \midrule
+        Autopar              & $A\mathbf{v} = \lambda\mathbf{v}$  & Direção só escalada \\
+        Eq. característica   & $\det(A - \lambda I) = 0$          & Encontra todo $\lambda$ \\
+        Traço                & $\operatorname{tr} A = \sum \lambda_i$ & Soma dos autovalores \\
+        Determinante         & $\det A = \prod \lambda_i$         & Produto dos autovalores \\
+        \bottomrule
+    \end{tabular}
+\end{table}
+
+\begin{remark}
+Matrizes reais simétricas, como a do Exemplo 2.1, sempre têm autovalores reais e autovetores ortogonais.
+\end{remark}
+
+\section{Exercícios}
+
+\begin{enumerate}
+    \item Encontre os autovalores de $\begin{pmatrix} 4 & 0 \\ 0 & -1 \end{pmatrix}$.
+    \item Qual das opções é o polinômio característico de $\begin{pmatrix} 1 & 2 \\ 0 & 3 \end{pmatrix}$?
+    \begin{enumerate}[label=\alph*),leftmargin=1.5em,topsep=0.3em,itemsep=0.15em]
+        \item $\lambda^2 - 4\lambda + 3$
+        \item $\lambda^2 + 4\lambda + 3$
+        \item $\lambda^2 - 3$
+    \end{enumerate}
+\end{enumerate}
+
+\vspace{1em}
+\noindent Leitura complementar: \href{https://pt.wikipedia.org/wiki/Autovalores_e_autovetores}{Autovalores e autovetores}.
+
+\end{document}

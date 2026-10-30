@@ -1,0 +1,536 @@
+/* ── Theme tokens ─────────────────────────────────────────────── */
+
+:root {
+    --font-primary:   'Courier New', Courier, monospace;
+    --font-secondary: Georgia, 'Times New Roman', serif;
+
+    --color-bg:        #f9f4e8;   /* parchment */
+    --color-bg-shadow: #e0d5c0;
+    --color-border:    #cdbfa5;
+    --h-font-color:    #5d3a1a;
+    --muted:           #8a7560;
+    --color-accent:    #8b2b40;   /* wine */
+    --on-accent:       #fdfaf4;
+    --danger:          #b03a2e;
+    --danger-hover:    #f6e1dd;
+    --menu-shadow:     0 6px 20px rgba(93, 58, 26, 0.18);
+    --log-fg:          #a32a1f;
+    --log-bg:          #fbeeea;
+    --ok:              #2f7d4a;
+    --warn:            #a86200;
+    --err:             #b03a2e;
+    color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+        --color-bg:        #2c2c2c;
+        --color-bg-shadow: #3a3632;
+        --color-border:    #4a4540;
+        --h-font-color:    #e0d5c0;
+        --muted:           #a89a88;
+        --color-accent:    #b38b6d;   /* tan */
+        --on-accent:       #1f1b17;
+        --danger:          #e07a6e;
+        --danger-hover:    #3d2622;
+        --menu-shadow:     0 6px 20px rgba(0, 0, 0, 0.45);
+        --log-fg:          #f08a7e;
+        --log-bg:          #1f1514;
+        --ok:              #6fcf8f;
+        --warn:            #f0b35a;
+        --err:             #f08a7e;
+        color-scheme: dark;
+    }
+}
+
+:root[data-theme="dark"] {
+    --color-bg:        #2c2c2c;
+    --color-bg-shadow: #3a3632;
+    --color-border:    #4a4540;
+    --h-font-color:    #e0d5c0;
+    --muted:           #a89a88;
+    --color-accent:    #b38b6d;
+    --on-accent:       #1f1b17;
+    --danger:          #e07a6e;
+    --danger-hover:    #3d2622;
+    --menu-shadow:     0 6px 20px rgba(0, 0, 0, 0.45);
+    --log-fg:          #f08a7e;
+    --log-bg:          #1f1514;
+    --ok:              #6fcf8f;
+    --warn:            #f0b35a;
+    --err:             #f08a7e;
+    color-scheme: dark;
+}
+
+/* ── Page ─────────────────────────────────────────────────────── */
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html, body { height: 100%; }
+
+body {
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    font-family: var(--font-primary);
+    color: var(--h-font-color);
+    background: var(--color-bg);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.studio-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 16px;
+    border-bottom: 2px solid var(--color-bg-shadow);
+    flex-shrink: 0;
+}
+
+.studio-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+}
+
+.studio-logo {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    border-radius: 7px;
+    background: var(--color-accent);
+    color: var(--on-accent);
+    font-family: var(--font-secondary);
+    font-weight: 700;
+    font-size: 0.95rem;
+}
+
+.studio-brand h1 {
+    margin: 0;
+    font-family: var(--font-secondary);
+    font-size: 1.25rem;
+    line-height: 1.2;
+}
+
+.studio-brand p {
+    margin: 2px 0 0;
+    font-size: 0.78rem;
+    color: var(--muted);
+}
+
+.studio-header-actions {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+}
+
+/* ── LaTeX Editor ─────────────────────────────────────────────── */
+
+#section-latex {
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.latex-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    background: var(--color-bg-shadow);
+    border-bottom: 1px solid var(--color-border);
+    flex-shrink: 0;
+    flex-wrap: wrap;
+}
+
+.latex-toolbar-spacer { flex: 1; }
+
+#latex-doc-name {
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    color: var(--h-font-color);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 4px 8px;
+    width: 180px;
+}
+
+#latex-docs-select, .latex-select {
+    font-family: var(--font-primary);
+    font-size: 0.85rem;
+    color: var(--h-font-color);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 4px 6px;
+    max-width: 160px;
+}
+
+.latex-btn {
+    font-family: var(--font-primary);
+    font-size: 0.82rem;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--h-font-color);
+    cursor: pointer;
+    transition: background 0.12s, opacity 0.12s;
+    white-space: nowrap;
+}
+
+.latex-btn:hover { background: var(--color-bg-shadow); }
+
+.latex-btn:focus-visible,
+.latex-menu-item:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 1px;
+}
+
+.latex-btn-primary {
+    background: var(--color-accent);
+    color: var(--on-accent);
+    border-color: transparent;
+    font-weight: 600;
+}
+
+.latex-btn-primary:hover { background: var(--color-accent); opacity: 0.85; }
+
+.latex-btn-danger { border-color: var(--danger); color: var(--danger); }
+.latex-btn-danger:hover { background: var(--danger-hover); }
+
+.latex-btn-fmt {
+    min-width: 30px;
+    padding: 4px 7px;
+    text-align: center;
+}
+
+/* ── Toolbar dropdown groups ──────────────────────────────────── */
+
+.latex-btn-group {
+    position: relative;
+    display: inline-flex;
+}
+
+.latex-btn-group-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+
+.latex-btn-group.open .latex-btn-group-toggle {
+    background: var(--color-bg-shadow);
+    border-color: var(--color-accent);
+}
+
+.latex-caret {
+    font-size: 0.65rem;
+    opacity: 0.7;
+}
+
+.latex-btn-group-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    min-width: 210px;
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    padding: 4px;
+    z-index: 20;
+    box-shadow: var(--menu-shadow);
+    flex-direction: column;
+    gap: 2px;
+}
+
+.latex-btn-group.open .latex-btn-group-menu {
+    display: flex;
+}
+
+.latex-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 6px 10px;
+    background: transparent;
+    border: none;
+    color: var(--h-font-color);
+    font-family: var(--font-primary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    border-radius: 3px;
+    text-align: left;
+    white-space: nowrap;
+}
+
+.latex-menu-item:hover {
+    background: var(--color-bg-shadow);
+}
+
+.latex-menu-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    min-width: 26px;
+    font-size: 0.82rem;
+}
+
+.latex-menu-shortcut {
+    margin-left: auto;
+    opacity: 0.55;
+    font-size: 0.72rem;
+    font-family: monospace;
+}
+
+/* ── Custom SVG / label icons ─────────────────────────────────── */
+
+.latex-svg-icon {
+    width: 16px;
+    height: 14px;
+    fill: currentColor;
+    vertical-align: middle;
+}
+
+.latex-icon-box {
+    display: inline-block;
+    border: 1.5px solid currentColor;
+    padding: 0 4px;
+    font-size: 0.6rem;
+    font-weight: 700;
+    line-height: 1.35;
+    border-radius: 2px;
+    letter-spacing: 0.02em;
+}
+
+.latex-icon-emptybox {
+    display: inline-block;
+    width: 16px;
+    height: 12px;
+    border: 1.5px solid currentColor;
+    border-radius: 2px;
+    vertical-align: -1px;
+}
+
+.latex-status {
+    font-family: monospace;
+    font-size: 0.78rem;
+    opacity: 0.9;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.latex-status-ok      { color: var(--ok); }
+.latex-status-error   { color: var(--err); }
+.latex-status-loading { color: var(--warn); }
+
+/* ── Split pane ───────────────────────────────────────────────── */
+
+.latex-split {
+    display: flex;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+}
+
+.latex-source-pane {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border-right: 2px solid var(--color-border);
+    position: relative;
+}
+
+.latex-preview-pane {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    background: #fff;
+    position: relative;
+}
+
+/* CodeMirror fills the editor pane and follows the theme */
+.latex-source-pane .CodeMirror {
+    flex: 1;
+    height: 100%;
+    font-size: 0.88rem;
+    line-height: 1.6;
+    font-family: var(--font-primary);
+    background: var(--color-bg);
+    color: var(--h-font-color);
+}
+
+.latex-source-pane .CodeMirror-gutters {
+    background: var(--color-bg-shadow);
+    border-right: 1px solid var(--color-border);
+}
+
+.latex-source-pane .CodeMirror-linenumber { color: var(--muted); }
+.latex-source-pane .CodeMirror-cursor { border-left-color: var(--h-font-color); }
+.latex-source-pane .CodeMirror-selected { background: var(--color-bg-shadow); }
+.latex-source-pane .CodeMirror-focused .CodeMirror-selected { background: color-mix(in srgb, var(--color-accent) 22%, transparent); }
+
+/* stex token colours tuned for both themes */
+.latex-source-pane .cm-tag      { color: var(--color-accent); }
+.latex-source-pane .cm-bracket  { color: var(--muted); }
+.latex-source-pane .cm-comment  { color: var(--muted); font-style: italic; }
+.latex-source-pane .cm-keyword  { color: #2f6f8f; }
+.latex-source-pane .cm-atom     { color: #6a4c9c; }
+.latex-source-pane .cm-number   { color: #2f7d4a; }
+.latex-source-pane .cm-builtin  { color: #a86200; }
+
+:root[data-theme="dark"] .latex-source-pane .cm-keyword { color: #7fb8d4; }
+:root[data-theme="dark"] .latex-source-pane .cm-atom    { color: #b9a0e0; }
+:root[data-theme="dark"] .latex-source-pane .cm-number  { color: #6fcf8f; }
+:root[data-theme="dark"] .latex-source-pane .cm-builtin { color: #f0b35a; }
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .latex-source-pane .cm-keyword { color: #7fb8d4; }
+    :root:not([data-theme="light"]) .latex-source-pane .cm-atom    { color: #b9a0e0; }
+    :root:not([data-theme="light"]) .latex-source-pane .cm-number  { color: #6fcf8f; }
+    :root:not([data-theme="light"]) .latex-source-pane .cm-builtin { color: #f0b35a; }
+}
+
+/* Embedded pdf.js viewer (tex/pdfjs/web/viewer.html) */
+#latex-pdf-frame {
+    flex: 1;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* ── Editor search bar (Ctrl+F) ───────────────────────────────── */
+.latex-search-bar {
+    position: absolute;
+    top: 6px;
+    right: 14px;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 6px;
+    background: var(--color-bg-shadow);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    box-shadow: var(--menu-shadow);
+}
+
+.latex-search-bar input {
+    font-family: var(--font-primary);
+    font-size: 0.82rem;
+    color: var(--h-font-color);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 3px 6px;
+    width: 170px;
+}
+
+.latex-search-bar button {
+    font-size: 0.75rem;
+    padding: 3px 7px;
+    border-radius: 4px;
+    border: 1px solid var(--color-border);
+    background: var(--color-bg);
+    color: var(--h-font-color);
+    cursor: pointer;
+}
+
+.latex-search-bar button:hover { background: var(--color-bg-shadow); }
+
+#latex-search-count {
+    font-family: monospace;
+    font-size: 0.75rem;
+    color: var(--h-font-color);
+    opacity: 0.8;
+    min-width: 44px;
+    text-align: center;
+}
+
+.latex-search-match        { background: rgba(255, 213, 0, 0.35); }
+.latex-search-match-active { background: rgba(255, 140, 0, 0.75); color: #000; }
+
+.latex-btn-toggled {
+    background: var(--color-accent);
+    color: var(--on-accent);
+    border-color: transparent;
+}
+
+.latex-btn-toggled:hover {
+    opacity: 0.85;
+    background: var(--color-accent);
+}
+
+#latex-log {
+    display: none;
+    flex: 1;
+    margin: 0;
+    overflow: auto;
+    padding: 12px;
+    font-family: monospace;
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--log-fg);
+    background: var(--log-bg);
+    white-space: pre-wrap;
+    word-break: break-all;
+}
+
+.latex-preview-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 8px;
+    color: #999;
+    font-family: var(--font-primary);
+    font-size: 0.9rem;
+    pointer-events: none;
+}
+
+.latex-preview-placeholder span:first-child { font-size: 2rem; }
+
+/* ── Focus mode ───────────────────────────────────────────────── */
+body.latex-fullscreen .studio-header { display: none; }
+
+body.latex-fullscreen .latex-source-pane .CodeMirror {
+    font-size: 0.95rem;
+}
+
+/* ── Narrow screens: stack editor over preview ────────────────── */
+@media (max-width: 760px) {
+    .studio-header { padding: 8px 16px; }
+    .studio-brand p { display: none; }
+
+    .latex-toolbar { padding: 8px 16px; }
+    .latex-toolbar-spacer { flex-basis: 100%; height: 0; }
+    #latex-doc-name { flex: 1 1 140px; width: auto; }
+    .latex-status { flex-basis: 100%; order: 99; }
+
+    .latex-split { flex-direction: column; }
+    .latex-source-pane {
+        border-right: none;
+        border-bottom: 2px solid var(--color-border);
+    }
+
+    /* Menus near the right edge would overflow the viewport otherwise. */
+    .latex-btn-group-menu { max-width: calc(100vw - 32px); }
+}

@@ -1,0 +1,14 @@
+# TeX Live staging (tex/fetch-texlive.py downloads and unpacks here)
+tex/*.tar.xz
+tex/*.tar.xz.part
+tex/texlive-packages/
+tex/__pycache__/
+
+# Format backups
+*.fmt.bak
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/

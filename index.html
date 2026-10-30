@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LaTeX Studio</title>
+    <meta name="description" content="An in-browser LaTeX editor: CodeMirror, a pdf.js viewer and pdfTeX compiled to WebAssembly. Everything runs locally.">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%238b2b40'/%3E%3Ctext x='16' y='22' font-family='Georgia,serif' font-size='15' font-weight='700' fill='%23fdfaf4' text-anchor='middle'%3ETeX%3C/text%3E%3C/svg%3E">
+    <script>
+        // Set the theme before first paint so there is no light/dark flash.
+        try {
+            const theme = localStorage.getItem('latex-studio:theme');
+            if (theme === 'light' || theme === 'dark') document.documentElement.dataset.theme = theme;
+        } catch {}
+    </script>
+    <link href="css/studio.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/codemirror.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/mode/stex/stex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.65.16/addon/search/searchcursor.min.js"></script>
+    <script src="tex/engine/PdfTeXEngine.js"></script>
+    <script src="js/i18n.js"></script>
+    <script src="js/studio.js" defer></script>
+</head>
+
+<body>
+    <header class="studio-header">
+        <div class="studio-brand">
+            <span class="studio-logo" aria-hidden="true">TeX</span>
+            <div>
+                <h1>LaTeX Studio</h1>
+                <p data-i18n="In-browser LaTeX editor — pdfTeX compiled to WebAssembly, no server.">In-browser LaTeX editor — pdfTeX compiled to WebAssembly, no server.</p>
+            </div>
+        </div>
+        <div class="studio-header-actions">
+            <button type="button" class="latex-btn" id="lang-toggle" data-i18n-title="Switch language" title="Switch language">PT</button>
+            <button type="button" class="latex-btn" id="theme-toggle" data-i18n-title="Toggle dark mode" title="Toggle dark mode" aria-label="Toggle dark mode">
+                <svg class="latex-svg-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true"><path d="M13.5 9.5A5.5 5.5 0 0 1 6.5 2.5a5.5 5.5 0 1 0 7 7z"/></svg>
+            </button>
+        </div>
+    </header>
+
+    <main id="section-latex">
+        <div class="latex-toolbar">
+            <input type="text" id="latex-doc-name" placeholder="Document name" data-i18n-placeholder="Document name">
+            <button class="latex-btn" id="latex-save-btn" data-i18n="Save">Save</button>
+            <button class="latex-btn" id="latex-new-btn" data-i18n="New">New</button>
+            <select id="latex-template-select" class="latex-select"></select>
+            <select id="latex-docs-select"></select>
+            <button class="latex-btn latex-btn-danger" id="latex-delete-btn" data-i18n="Delete">Delete</button>
+
+            <div class="latex-btn-group">
+                <button class="latex-btn latex-btn-fmt latex-btn-group-toggle" data-latex-group-toggle title="Text formatting" data-i18n-title="Text formatting">Aa <span class="latex-caret">▾</span></button>
+                <div class="latex-btn-group-menu" data-latex-group-menu>
+                    <button class="latex-menu-item" id="latex-bold-btn">
+                        <span class="latex-menu-icon"><b>B</b></span><span data-i18n="Bold">Bold</span>
+                        <span class="latex-menu-shortcut">Ctrl+B</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-italic-btn">
+                        <span class="latex-menu-icon"><i>I</i></span><span data-i18n="Italic">Italic</span>
+                        <span class="latex-menu-shortcut">Ctrl+I</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-emdash-btn">
+                        <span class="latex-menu-icon">—</span><span data-i18n="Em dash">Em dash</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-href-btn" title="Select the URL before clicking" data-i18n-title="Select the URL before clicking">
+                        <span class="latex-menu-icon"><svg class="latex-svg-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true"><path d="M6.5 9.5 L9.5 6.5"/><path d="M4.6 11.4 A2.6 2.6 0 0 1 4.6 7.7 L6.5 5.8"/><path d="M11.4 4.6 A2.6 2.6 0 0 1 11.4 8.3 L9.5 10.2"/></svg></span><span data-i18n="Link (\href)">Link (\href)</span>
+                    </button>
+                </div>
+            </div>
+            <div class="latex-btn-group">
+                <button class="latex-btn latex-btn-fmt latex-btn-group-toggle" data-latex-group-toggle title="Headings" data-i18n-title="Headings">H <span class="latex-caret">▾</span></button>
+                <div class="latex-btn-group-menu" data-latex-group-menu>
+                    <button class="latex-menu-item" id="latex-section-btn">
+                        <span class="latex-menu-icon">H1</span><span data-i18n="Section">Section</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-subsection-btn">
+                        <span class="latex-menu-icon">H2</span><span data-i18n="Subsection">Subsection</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-subsubsection-btn">
+                        <span class="latex-menu-icon">H3</span><span data-i18n="Subsubsection">Subsubsection</span>
+                    </button>
+                </div>
+            </div>
+            <div class="latex-btn-group">
+                <button class="latex-btn latex-btn-fmt latex-btn-group-toggle" data-latex-group-toggle title="Lists" data-i18n-title="Lists">•— <span class="latex-caret">▾</span></button>
+                <div class="latex-btn-group-menu" data-latex-group-menu>
+                    <button class="latex-menu-item" id="latex-itemize-btn">
+                        <span class="latex-menu-icon">•—</span><span data-i18n="List (itemize)">List (itemize)</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-enumerate-btn">
+                        <span class="latex-menu-icon">1.</span><span data-i18n="Numbered list (enumerate)">Numbered list (enumerate)</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-ex-answers-btn">
+                        <span class="latex-menu-icon">a)</span><span data-i18n="Exercise choices">Exercise choices</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-ex-steps-btn">
+                        <span class="latex-menu-icon">a.</span><span data-i18n="Solution steps">Solution steps</span>
+                    </button>
+                </div>
+            </div>
+            <div class="latex-btn-group">
+                <button class="latex-btn latex-btn-fmt latex-btn-group-toggle" data-latex-group-toggle title="Paragraph and alignment" data-i18n-title="Paragraph and alignment">
+                    <svg class="latex-svg-icon" viewBox="0 0 16 14" aria-hidden="true"><rect x="1" y="1" width="14" height="1.6"/><rect x="1" y="4.7" width="10" height="1.6"/><rect x="1" y="8.4" width="14" height="1.6"/><rect x="1" y="12.1" width="8" height="1.6"/></svg>
+                    <span class="latex-caret">▾</span>
+                </button>
+                <div class="latex-btn-group-menu" data-latex-group-menu>
+                    <button class="latex-menu-item" id="latex-linebreak-btn">
+                        <span class="latex-menu-icon">\\</span><span data-i18n="Line break">Line break</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-blankpar-btn">
+                        <span class="latex-menu-icon">¶</span><span data-i18n="Blank-line paragraph">Blank-line paragraph</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-indent-btn">
+                        <span class="latex-menu-icon">⇥</span><span data-i18n="Indent (\indent)">Indent (\indent)</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-center-btn">
+                        <span class="latex-menu-icon"><svg class="latex-svg-icon" viewBox="0 0 16 14" aria-hidden="true"><rect x="1" y="1" width="14" height="1.6"/><rect x="3" y="4.7" width="10" height="1.6"/><rect x="1" y="8.4" width="14" height="1.6"/><rect x="3" y="12.1" width="10" height="1.6"/></svg></span><span data-i18n="Center">Center</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-flushright-btn">
+                        <span class="latex-menu-icon"><svg class="latex-svg-icon" viewBox="0 0 16 14" aria-hidden="true"><rect x="1" y="1" width="14" height="1.6"/><rect x="5" y="4.7" width="10" height="1.6"/><rect x="1" y="8.4" width="14" height="1.6"/><rect x="5" y="12.1" width="10" height="1.6"/></svg></span><span data-i18n="Align right">Align right</span>
+                    </button>
+                </div>
+            </div>
+            <div class="latex-btn-group">
+                <button class="latex-btn latex-btn-fmt latex-btn-group-toggle" data-latex-group-toggle title="Boxes (tcolorbox)" data-i18n-title="Boxes (tcolorbox)">
+                    <span class="latex-icon-emptybox"></span>
+                    <span class="latex-caret">▾</span>
+                </button>
+                <div class="latex-btn-group-menu" data-latex-group-menu>
+                    <button class="latex-menu-item" id="latex-box-definition-btn">
+                        <span class="latex-menu-icon"><span class="latex-icon-box">Def</span></span><span data-i18n="Definition">Definition</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-box-note-btn">
+                        <span class="latex-menu-icon"><span class="latex-icon-box">i</span></span><span data-i18n="Note">Note</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-box-example-btn">
+                        <span class="latex-menu-icon"><span class="latex-icon-box">Ex</span></span><span data-i18n="Example">Example</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-box-text-btn">
+                        <span class="latex-menu-icon"><svg class="latex-svg-icon" viewBox="0 0 20 16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="1.25" y="1.25" width="17.5" height="13.5" rx="1.5"/><line x1="4" y1="6" x2="16" y2="6"/><line x1="4" y1="9" x2="12" y2="9"/><line x1="4" y1="12" x2="14" y2="12"/></svg></span><span data-i18n="Text">Text</span>
+                    </button>
+                    <button class="latex-menu-item" id="latex-box-generic-btn">
+                        <span class="latex-menu-icon"><span class="latex-icon-emptybox"></span></span><span data-i18n="Generic">Generic</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="latex-toolbar-spacer"></div>
+            <span id="latex-status" class="latex-status" role="status" aria-live="polite"></span>
+            <button class="latex-btn latex-btn-primary" id="latex-compile-btn" data-i18n="Compile (Ctrl+Enter)">Compile (Ctrl+Enter)</button>
+            <button class="latex-btn" id="latex-download-btn" data-i18n="Download PDF">Download PDF</button>
+            <button class="latex-btn" id="latex-sync-btn" title="Sync editor and PDF scrolling" data-i18n-title="Sync editor and PDF scrolling">⇅ Sync</button>
+            <button class="latex-btn" id="latex-fullscreen-btn" title="Toggle focus mode (Esc to exit)" data-i18n-title="Toggle focus mode (Esc to exit)">⛶ Focus</button>
+        </div>
+
+        <div class="latex-split">
+            <div class="latex-source-pane" id="latex-source-pane">
+                <div class="latex-search-bar" id="latex-search-bar" style="display:none">
+                    <input type="text" id="latex-search-input" placeholder="Search the source…" data-i18n-placeholder="Search the source…">
+                    <span id="latex-search-count">0/0</span>
+                    <button id="latex-search-prev" title="Previous (Shift+Enter)" data-i18n-title="Previous (Shift+Enter)">▲</button>
+                    <button id="latex-search-next" title="Next (Enter)" data-i18n-title="Next (Enter)">▼</button>
+                    <button id="latex-search-close" title="Close (Esc)" data-i18n-title="Close (Esc)">✕</button>
+                </div>
+            </div>
+            <div class="latex-preview-pane">
+                <div class="latex-preview-placeholder" id="latex-placeholder">
+                    <span>📄</span>
+                    <span data-i18n="Compile to see the PDF">Compile to see the PDF</span>
+                </div>
+                <iframe id="latex-pdf-frame" style="display:none" title="PDF preview" allow="fullscreen" allowfullscreen></iframe>
+                <pre id="latex-log"></pre>
+            </div>
+        </div>
+    </main>
+</body>
+
+</html>
