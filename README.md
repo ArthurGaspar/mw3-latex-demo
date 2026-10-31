@@ -1,5 +1,7 @@
 # LaTeX Studio
 
+https://arthurgaspar.github.io/mw3-latex-demo/
+
 An in-browser LaTeX editor that compiles **entirely on the client**. pdfTeX runs as
 WebAssembly in a Web Worker, a trimmed TeX Live tree is served as static files, and the
 result is shown in an embedded pdf.js viewer. No backend, no accounts, no upload. Your
